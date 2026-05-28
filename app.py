@@ -8,7 +8,7 @@ from scipy.optimize import brentq
 st.set_page_config(page_title="Einfache Kreislaufberechnung", layout="wide", page_icon="logo.png")
 
 APP_TITLE = "Einfache Kreislaufberechnung"
-APP_VERSION = "0.15.0V"
+APP_VERSION = "0.15.1V"
 
 FLUIDS = {
     "R11": "R11",
@@ -43,13 +43,13 @@ FLUIDS = {
     "R290": "Propane",
     "RC318": "RC318",
     "R365MFC": "R365MFC",
-    "R401A": "R401A",
-    "R401B": "R401B",
-    "R401C": "R401C",
-    "R402A": "R402A",
-    "R402B": "R402B",
-    "R403A": "R403A",
-    "R403B": "R403B",
+    "R401A": "R401A.mix",
+    "R401B": "R401B.mix",
+    "R401C": "R401C.mix",
+    "R402A": "R402A.mix",
+    "R402B": "R402B.mix",
+    "R403A": "R403A.mix",
+    "R403B": "R403B.mix",
     "R404A": "R404A",
     "R405A": "R405A.mix",
     "R406A": "R406A.mix",
