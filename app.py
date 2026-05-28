@@ -481,7 +481,7 @@ st.markdown(
 
 st.caption("Berechnet die wichtigsten Zustände und Kennwerte eines einfachen Kältemittelkreislaufs.")
 
-col1, col2 = st.columns([1.05, 1.0])
+col1, col2 = st.columns([1.05, 1.3])
 
 with col1:
     row1_col1, row1_col2 = st.columns(2)
@@ -530,10 +530,14 @@ with col1:
     lfl = st.number_input("Flüssigkeitsleitungslänge [m]", value=2.5) if show_pipe_inputs else 2.5
     lsl = st.number_input("Saugleitungslänge [m]", value=3.0) if show_pipe_inputs else 3.0
 
-    run = st.button("Berechnen")
+    run = st.button("Berechnen", use_container_width=True)
 
-with col2:
-    pass
+result_container = col2.container()
+bottom_container = st.container()
+
+with result_container:
+    st.subheader("Ergebnis")
+    st.info("Eingaben setzen und auf Berechnen klicken.")
 
 if run:
     try:
@@ -565,45 +569,51 @@ if run:
             csv_buffer.write("\nRohrleitungsdimensionierung\n")
             df_pipes.to_csv(csv_buffer, index=False, sep=';')
 
-        with col2:
+        with result_container:
             st.subheader("Systemdaten")
             st.dataframe(df_results, use_container_width=True, hide_index=True)
             st.download_button(
                 "CSV-Datei erstellen",
                 data=csv_buffer.getvalue().encode("utf-8-sig"),
                 file_name=f"{project.replace(' ', '_')}_auswertung.csv",
-                mime="text/csv"
+                mime="text/csv",
+                use_container_width=True,
             )
 
-        st.subheader("Kreislaufpunkte")
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        with bottom_container:
+            st.subheader("Kreislaufpunkte")
+            st.dataframe(df, use_container_width=True, hide_index=True)
 
-        if ifpipes == "Ja":
-            st.subheader("Rohrleitungsdimensionierung")
-            st.dataframe(df_pipes, use_container_width=True, hide_index=True)
+            if ifpipes == "Ja":
+                st.subheader("Rohrleitungsdimensionierung")
+                st.dataframe(df_pipes, use_container_width=True, hide_index=True)
 
-        with st.expander("Anleitung"):
-            st.markdown(
-                """
-                Dieses Tool dient zur **einfachen Kreislaufberechnung** von Kälteanlagen und unterstützt dich bei der Bestimmung von **Kreislaufpunkten**, **Systemdaten**, **Stoffdaten** sowie der **Rohrleitungsdimensionierung**. Damit kannst du thermodynamische Zustände schnell überschlagen, Ergebnisse tabellarisch auswerten und bei Bedarf als CSV-Datei exportieren.
+            if errors:
+                st.warning("\n".join(errors))
 
-                **Bedeutung der Kreislaufpunkte:**
-
-                - **1:** Verdichtereingang nach Überhitzung von Verdampfer und Saugleitung
-                - **2:** Verdichterausgang und Verflüssigereintritt
-                - **3:** Verflüssigeraustritt und Expansionsventileingang
-                - **4:** Expansionsventilausgang und Verdampfereintritt
-                - **5:** Verdampferausgang und Eingang Saugleitung
-                - **c''**: Gesättigtes Gas bei Verflüssigungsdruck
-                - **c'**: Flüssigkeit bei Verflüssigungsdruck
-                - **0''**: Gesättigtes Gas bei Verdampfungsdruck
-                - **0'**: Flüssigkeit bei Verdampfungsdruck
-
-                Repository: https://github.com/div-ne/Einfache-Kreislaufberechnung
-                """
-            )
-
-        if errors:
-            st.warning("\n".join(errors))
     except Exception as e:
-        st.error(str(e))
+        with result_container:
+            st.error(str(e))
+
+st.divider()
+
+with st.expander("Anleitung"):
+    st.markdown(
+        """
+        Dieses Tool dient zur **einfachen Kreislaufberechnung** von Kälteanlagen und unterstützt dich bei der Bestimmung von **Kreislaufpunkten**, **Systemdaten**, **Stoffdaten** sowie der **Rohrleitungsdimensionierung**. Damit kannst du thermodynamische Zustände schnell überschlagen, Ergebnisse tabellarisch auswerten und bei Bedarf als CSV-Datei exportieren.
+
+        **Bedeutung der Kreislaufpunkte:**
+
+        - **1:** Verdichtereingang nach Überhitzung von Verdampfer und Saugleitung
+        - **2:** Verdichterausgang und Verflüssigereintritt
+        - **3:** Verflüssigeraustritt und Expansionsventileingang
+        - **4:** Expansionsventilausgang und Verdampfereintritt
+        - **5:** Verdampferausgang und Eingang Saugleitung
+        - **c''**: Gesättigtes Gas bei Verflüssigungsdruck
+        - **c'**: Flüssigkeit bei Verflüssigungsdruck
+        - **0''**: Gesättigtes Gas bei Verdampfungsdruck
+        - **0'**: Flüssigkeit bei Verdampfungsdruck
+
+        Repository: https://github.com/div-ne/Einfache-Kreislaufberechnung
+        """
+    )
