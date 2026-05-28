@@ -537,7 +537,8 @@ bottom_container = st.container()
 
 with result_container:
     st.subheader("Ergebnis")
-    st.info("Eingaben setzen und auf Berechnen klicken.")
+    if not run:
+        st.info("Eingaben setzen und auf Berechnen klicken.")
 
 if run:
     try:
@@ -570,7 +571,6 @@ if run:
             df_pipes.to_csv(csv_buffer, index=False, sep=';')
 
         with result_container:
-            st.subheader("Systemdaten")
             st.dataframe(df_results, use_container_width=True, hide_index=True)
             st.download_button(
                 "CSV-Datei erstellen",
