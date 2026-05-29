@@ -8,7 +8,7 @@ from scipy.optimize import brentq
 st.set_page_config(page_title="Einfache Kreislaufberechnung", layout="wide", page_icon="logo.png")
 
 APP_TITLE = "Einfache Kreislaufberechnung"
-APP_VERSION = "0.15.3V"
+APP_VERSION = "0.15.4V"
 
 FLUIDS = {
     "R11": "R11",
@@ -354,7 +354,7 @@ def run_calculation(inputs):
     d_sl_dm, A_M_sl_dm, V_i_sl_dm = pipe_geometry(di_sl_dm, l_sl)
 
     df = pd.DataFrame({
-        "P": ["1", "2", "3", "4", "5", "c''", "c'", "0''", "0'"],
+        "Punkte": ["1", "2", "3", "4", "5", "c''", "c'", "0''", "0'"],
         "Temperatur [°C]": [
             round(T_sh - 273.15, 2), round(T_end - 273.15, 2), round(T_cu - 273.15, 2),
             round(T_4 - 273.15, 2), round(T_0h - 273.15, 2),
@@ -543,9 +543,9 @@ elif st.session_state.calc_state is not None:
     with result_container:
         st.dataframe(current["df_results"], use_container_width=True, hide_index=True)
         st.download_button(
-            "CSV-Datei erstellen",
+            "CSV-Datei herunterladen",
             data=csv_bytes,
-            file_name=f"{current['project'].replace(' ', '_')}_auswertung.csv",
+            file_name="Einfache-Kreislaufberechnung.csv",
             mime="text/csv",
             use_container_width=True,
         )
