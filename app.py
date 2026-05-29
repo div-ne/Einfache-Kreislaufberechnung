@@ -8,7 +8,7 @@ from scipy.optimize import brentq
 st.set_page_config(page_title="Einfache Kreislaufberechnung", layout="wide", page_icon="logo.png")
 
 APP_TITLE = "Einfache Kreislaufberechnung"
-APP_VERSION = "0.15.2V"
+APP_VERSION = "0.15.3V"
 
 FLUIDS = {
     "R11": "R11",
@@ -203,6 +203,19 @@ def T_brentq_h(p, h, T_min, T_max, fluid):
     def f(T):
         return cp.PropsSI("H", "T", T, "P", p, fluid) - h
     return brentq(f, T_min, T_max)
+
+def build_csv_bytes(project, df_results, df, df_pipes=None):
+    csv_buffer = io.StringIO()
+    csv_buffer.write(f"{APP_TITLE};{APP_VERSION}\n")
+    csv_buffer.write("Systemdaten\n")
+    df_results.to_csv(csv_buffer, index=False, sep=";")
+    csv_buffer.write("\nKreislaufpunkte\n")
+    df.to_csv(csv_buffer, index=False, sep=";")
+    if df_pipes is not None:
+        csv_buffer.write("\nRohrleitungsdimensionierung\n")
+        df_pipes.to_csv(csv_buffer, index=False, sep=";")
+    return csv_buffer.getvalue().encode("utf-8-sig")
+
 
 def run_calculation(inputs):
     project = inputs["project"]
@@ -475,10 +488,13 @@ with col1:
 result_container = col2.container()
 bottom_container = st.container()
 
+if "calc_state" not in st.session_state:
+    st.session_state.calc_state = None
+if "calc_error" not in st.session_state:
+    st.session_state.calc_error = None
+
 with result_container:
     st.subheader("Ergebnis")
-    if not run:
-        st.info("Eingaben setzen und auf Berechnen klicken.")
 
 if run:
     try:
@@ -499,41 +515,54 @@ if run:
             "l_fl": lfl,
             "l_sl": lsl,
         })
-
-        csv_buffer = io.StringIO()
-        csv_buffer.write("Systemdaten\n")
-        df_results.to_csv(csv_buffer, index=False, sep=';')
-        csv_buffer.write("\nKreislaufpunkte\n")
-        df.to_csv(csv_buffer, index=False, sep=';')
-
-        if ifpipes == "Ja":
-            csv_buffer.write("\nRohrleitungsdimensionierung\n")
-            df_pipes.to_csv(csv_buffer, index=False, sep=';')
-
-        with result_container:
-            st.dataframe(df_results, use_container_width=True, hide_index=True)
-            st.download_button(
-                "CSV-Datei erstellen",
-                data=csv_buffer.getvalue().encode("utf-8-sig"),
-                file_name=f"{project.replace(' ', '_')}_auswertung.csv",
-                mime="text/csv",
-                use_container_width=True,
-            )
-
-        with bottom_container:
-            st.subheader("Kreislaufpunkte")
-            st.dataframe(df, use_container_width=True, hide_index=True)
-
-            if ifpipes == "Ja":
-                st.subheader("Rohrleitungsdimensionierung")
-                st.dataframe(df_pipes, use_container_width=True, hide_index=True)
-
-            if errors:
-                st.warning("\n".join(errors))
-
+        st.session_state.calc_state = {
+            "project": project,
+            "ifpipes": ifpipes,
+            "df": df,
+            "df_results": df_results,
+            "df_pipes": df_pipes,
+            "errors": errors,
+        }
+        st.session_state.calc_error = None
     except Exception as e:
-        with result_container:
-            st.error(str(e))
+        st.session_state.calc_state = None
+        st.session_state.calc_error = str(e)
+
+if st.session_state.calc_error:
+    with result_container:
+        st.error(st.session_state.calc_error)
+elif st.session_state.calc_state is not None:
+    current = st.session_state.calc_state
+    csv_bytes = build_csv_bytes(
+        current["project"],
+        current["df_results"],
+        current["df"],
+        current["df_pipes"] if current["ifpipes"] == "Ja" else None,
+    )
+
+    with result_container:
+        st.dataframe(current["df_results"], use_container_width=True, hide_index=True)
+        st.download_button(
+            "CSV-Datei erstellen",
+            data=csv_bytes,
+            file_name=f"{current['project'].replace(' ', '_')}_auswertung.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+
+    with bottom_container:
+        st.subheader("Kreislaufpunkte")
+        st.dataframe(current["df"], use_container_width=True, hide_index=True)
+
+        if current["ifpipes"] == "Ja":
+            st.subheader("Rohrleitungsdimensionierung")
+            st.dataframe(current["df_pipes"], use_container_width=True, hide_index=True)
+
+        if current["errors"]:
+            st.warning("\n".join(current["errors"]))
+else:
+    with result_container:
+        st.info("Eingaben setzen und auf Berechnen klicken.")
 
 st.divider()
 
