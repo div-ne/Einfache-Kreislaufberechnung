@@ -8,7 +8,7 @@ from scipy.optimize import brentq
 st.set_page_config(page_title="Einfache Kreislaufberechnung", layout="wide", page_icon="logo.png")
 
 APP_TITLE = "Einfache Kreislaufberechnung"
-APP_VERSION = "0.15.4V"
+APP_VERSION = "0.15.5V"
 
 FLUIDS = {
     "R11": "R11",
@@ -545,7 +545,7 @@ elif st.session_state.calc_state is not None:
         st.download_button(
             "CSV-Datei herunterladen",
             data=csv_bytes,
-            file_name="Einfache-Kreislaufberechnung.csv",
+            file_name=f"{project.replace(' ', '_')}_Einfache-Kreislaufberechnung.csv",
             mime="text/csv",
             use_container_width=True,
         )
