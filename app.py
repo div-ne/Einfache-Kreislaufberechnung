@@ -8,7 +8,7 @@ from scipy.optimize import brentq
 st.set_page_config(page_title="Einfache Kreislaufberechnung", layout="wide", page_icon="logo.png")
 
 APP_TITLE = "Einfache Kreislaufberechnung"
-APP_VERSION = "0.15.5V"
+APP_VERSION = "0.15.6V"
 
 FLUIDS = {
     "R11": "R11",
@@ -437,6 +437,7 @@ st.caption("Berechnet die wichtigsten Zust√§nde und Kennwerte eines einfachen K√
 col1, col2 = st.columns([1.05, 1.3])
 
 with col1:
+    st.subheader("Eingabe")
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
         project = st.text_input("Projekt", "Projekt")
