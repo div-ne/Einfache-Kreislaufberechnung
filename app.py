@@ -8,7 +8,7 @@ from scipy.optimize import brentq
 st.set_page_config(page_title="Einfache Kreislaufberechnung", layout="wide", page_icon="logo.png")
 
 APP_TITLE = "Einfache Kreislaufberechnung"
-APP_VERSION = "0.15.6V"
+APP_VERSION = "0.15.7V"
 
 FLUIDS = {
     "R11": "R11",
@@ -480,9 +480,13 @@ with col1:
     ifpipes = st.selectbox("Rohrleitungsdimensionierung", ["Nein", "Ja"])
 
     show_pipe_inputs = ifpipes == "Ja"
-    lhg = st.number_input("Heissgasleitungslänge [m]", value=5.0) if show_pipe_inputs else 5.0
-    lfl = st.number_input("Flüssigkeitsleitungslänge [m]", value=2.5) if show_pipe_inputs else 2.5
-    lsl = st.number_input("Saugleitungslänge [m]", value=3.0) if show_pipe_inputs else 3.0
+    row5_col1, row5_col2, row5_col3 = st.columns(3)
+    with row5_col1:
+        lhg = st.number_input("Heissgasleitungslänge [m]", value=5.0) if show_pipe_inputs else 5.0
+    with row5_col2:
+        lfl = st.number_input("Flüssigkeitsleitungslänge [m]", value=2.5) if show_pipe_inputs else 2.5
+    with row5_col3:
+        lsl = st.number_input("Saugleitungslänge [m]", value=3.0) if show_pipe_inputs else 3.0
 
     run = st.button("Berechnen", use_container_width=True)
 
