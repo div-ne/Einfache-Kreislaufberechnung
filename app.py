@@ -8,7 +8,7 @@ from scipy.optimize import brentq
 st.set_page_config(page_title="Einfache Kreislaufberechnung", layout="wide", page_icon="logo.png")
 
 APP_TITLE = "Einfache Kreislaufberechnung"
-APP_VERSION = "0.15.7V"
+APP_VERSION = "0.15.8V"
 
 FLUIDS = {
     "R11": "R11",
@@ -262,16 +262,6 @@ def run_calculation(inputs):
     if V_com == 0 and mode == 2:
         V_com = 1
 
-    p_0_dew = cp.PropsSI("P", "T", T_0, "Q", 1, fluid)
-    p_0_bubble = cp.PropsSI("P", "T", T_0, "Q", 0, fluid)
-    p_0 = (p_0_dew + p_0_bubble) / 2 if fluid[1] == "4" else p_0_dew
-    T_0_dew = cp.PropsSI("T", "P", p_0, "Q", 1, fluid)
-    T_0_bubble = cp.PropsSI("T", "P", p_0, "Q", 0, fluid)
-    T_4 = T_0_dew
-    h_4 = cp.PropsSI("H", "P", p_0, "Q", 0.5, fluid)
-
-    T_0h = T_0 + dt_0h
-    T_sh = T_0 + dt_0h + dt_sh
     p_c = cp.PropsSI("P", "T", T_c, "Q", 1, fluid)
     T_c_dew = cp.PropsSI("T", "P", p_c, "Q", 1, fluid)
     T_c_bubble = cp.PropsSI("T", "P", p_c, "Q", 0, fluid)
@@ -280,6 +270,57 @@ def run_calculation(inputs):
     h_4 = h_3
     T_2min = T_c_dew + 1
     T_2max = T_c_dew + 100
+
+    if fluid[1] == "4":
+        p_0_dew_1 = cp.PropsSI("P", "T", T_0, "Q", 1, fluid)
+        p_0_bubble_1 = cp.PropsSI("P", "T", T_0, "Q", 0, fluid)
+        p_0_1 = (p_0_dew_1 + p_0_bubble_1) / 2
+        T_0_dew_1 = cp.PropsSI("T", "P", p_0_1, "Q", 1, fluid)
+        T_0_bubble_1 = cp.PropsSI("T", "P", p_0_1, "Q", 0, fluid)
+        h_0_dew_1 = cp.PropsSI("H", "P", p_0_1, "Q", 1, fluid)
+        h_0_bubble_1 = cp.PropsSI("H", "P", p_0_1, "Q", 0, fluid)
+        T_4_1 = (h_4 - h_0_bubble_1) / (h_0_dew_1 - h_0_bubble_1) * (T_0_dew_1 - T_0_bubble_1) + T_0_bubble_1
+        T_0_m_1 = (T_4_1 + T_0_dew_1) / 2
+        dt_0_m_1 = T_0_m_1 - T_0
+        T_0_2 = T_0 - dt_0_m_1
+        
+        p_0_dew_2 = cp.PropsSI("P", "T", T_0_2, "Q", 1, fluid)
+        p_0_bubble_2 = cp.PropsSI("P", "T", T_0_2, "Q", 0, fluid)
+        p_0_2 = (p_0_dew_2 + p_0_bubble_2) / 2
+        T_0_dew_2 = cp.PropsSI("T", "P", p_0_2, "Q", 1, fluid)
+        T_0_bubble_2 = cp.PropsSI("T", "P", p_0_2, "Q", 0, fluid)
+        h_0_dew_2 = cp.PropsSI("H", "P", p_0_2, "Q", 1, fluid)
+        h_0_bubble_2 = cp.PropsSI("H", "P", p_0_2, "Q", 0, fluid)
+        T_4_2 = (h_4 - h_0_bubble_2) / (h_0_dew_2 - h_0_bubble_2) * (T_0_dew_2 - T_0_bubble_2) + T_0_bubble_2
+        T_0_m_2 = (T_4_2 + T_0_dew_2) / 2
+        dt_0_m_2 = T_0_m_2 - T_0
+        T_0_3 = T_0 - dt_0_m_2
+
+        p_0_dew_3 = cp.PropsSI("P", "T", T_0_3, "Q", 1, fluid)
+        p_0_bubble_3 = cp.PropsSI("P", "T", T_0_3, "Q", 0, fluid)
+        p_0_3 = (p_0_dew_3 + p_0_bubble_3) / 2
+        T_0_dew_3 = cp.PropsSI("T", "P", p_0_3, "Q", 1, fluid)
+        T_0_bubble_3 = cp.PropsSI("T", "P", p_0_3, "Q", 0, fluid)
+        h_0_dew_3 = cp.PropsSI("H", "P", p_0_3, "Q", 1, fluid)
+        h_0_bubble_3 = cp.PropsSI("H", "P", p_0_3, "Q", 0, fluid)
+        T_4_3 = (h_4 - h_0_bubble_3) / (h_0_dew_3 - h_0_bubble_3) * (T_0_dew_3 - T_0_bubble_3) + T_0_bubble_3
+        T_0_m_3 = (T_4_3 + T_0_dew_3) / 2
+        dt_0_m_3 = T_0_m_3 - T_0
+        T_0_4 = T_0 - dt_0_m_3
+
+        T_4 = T_4_3
+        T_0_dew = T_0_dew_3
+        T_0_bubble = T_0_bubble_3
+        p_0 = p_0_3
+    else:
+        p_0 = cp.PropsSI("P", "T", T_0, "Q", 1, fluid)
+        T_4 = T_0
+        T_0_dew = T_0
+        T_0_bubble = T_0
+
+    x_4 = cp.PropsSI("Q", "P", p_0, "T", T_4, fluid)
+    T_0h = T_0_dew + dt_0h
+    T_sh = T_0_dew + dt_0h + dt_sh
 
     h_1 = cp.PropsSI("H", "P", p_0, "T", T_sh, fluid)
     s_1 = cp.PropsSI("S", "P", p_0, "T", T_sh, fluid)
@@ -377,7 +418,7 @@ def run_calculation(inputs):
         ],
         "Dichte [kg/m3]": [
             round(rho_1, 2), round(rho_2, 2), round(rho_3, 2),
-            round(cp.PropsSI("D", "P", p_0, "Q", 0.5, fluid), 2),
+            round(cp.PropsSI("D", "P", p_0, "Q", x_4, fluid), 2),
             round(cp.PropsSI("D", "P", p_0, "T", T_0h, fluid), 2),
             round(cp.PropsSI("D", "P", p_c, "Q", 1, fluid), 2),
             round(cp.PropsSI("D", "P", p_c, "Q", 0, fluid), 2),
@@ -388,7 +429,7 @@ def run_calculation(inputs):
             round(s_1 / 1e3, 4),
             round(cp.PropsSI("S", "P", p_c, "T", T_end, fluid) / 1e3, 4),
             round(cp.PropsSI("S", "P", p_c, "T", T_cu, fluid) / 1e3, 4),
-            round(cp.PropsSI("S", "P", p_0, "Q", 0.5, fluid) / 1e3, 4),
+            round(cp.PropsSI("S", "P", p_0, "Q", x_4, fluid) / 1e3, 4),
             round(cp.PropsSI("S", "P", p_0, "T", T_0h, fluid) / 1e3, 4),
             round(cp.PropsSI("S", "P", p_c, "Q", 1, fluid) / 1e3, 2),
             round(cp.PropsSI("S", "P", p_c, "Q", 0, fluid) / 1e3, 2),
