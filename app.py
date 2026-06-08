@@ -262,11 +262,19 @@ def run_calculation(inputs):
     if V_com == 0 and mode == 2:
         V_com = 1
 
-    p_c = cp.PropsSI("P", "T", T_c, "Q", 1, fluid)
-    T_c_dew = cp.PropsSI("T", "P", p_c, "Q", 1, fluid)
-    T_c_bubble = cp.PropsSI("T", "P", p_c, "Q", 0, fluid)
+    if fluid[1] == "4":
+        p_c_dew = cp.PropsSI("P", "T", T_c, "Q", 1, fluid)
+        p_c_bubble = cp.PropsSI("P", "T", T_c, "Q", 0, fluid)
+        p_c = (p_c_dew + p_c_bubble) / 2
+        T_c_dew = cp.PropsSI("T", "P", p_c, "Q", 1, fluid)
+        T_c_bubble = cp.PropsSI("T", "P", p_c, "Q", 0, fluid)
+    else:
+        p_c = cp.PropsSI("P", "T", T_c, "Q", 1, fluid)
+        T_c_dew = cp.PropsSI("T", "P", p_c, "Q", 1, fluid)
+        T_c_bubble = cp.PropsSI("T", "P", p_c, "Q", 0, fluid)
+    
     T_cu = T_c_bubble - dt_cu
-    h_3 = cp.PropsSI("H", "T", T_c_bubble, "Q", 0, fluid)
+    h_3 = cp.PropsSI("H", "T", T_cu, "P", p_c, fluid)
     h_4 = h_3
     T_2min = T_c_dew + 1
     T_2max = T_c_dew + 100
@@ -292,33 +300,22 @@ def run_calculation(inputs):
         h_0_dew_2 = cp.PropsSI("H", "P", p_0_2, "Q", 1, fluid)
         h_0_bubble_2 = cp.PropsSI("H", "P", p_0_2, "Q", 0, fluid)
         T_4_2 = (h_4 - h_0_bubble_2) / (h_0_dew_2 - h_0_bubble_2) * (T_0_dew_2 - T_0_bubble_2) + T_0_bubble_2
-        T_0_m_2 = (T_4_2 + T_0_dew_2) / 2
-        dt_0_m_2 = T_0_m_2 - T_0
-        T_0_3 = T_0 - dt_0_m_2
 
-        p_0_dew_3 = cp.PropsSI("P", "T", T_0_3, "Q", 1, fluid)
-        p_0_bubble_3 = cp.PropsSI("P", "T", T_0_3, "Q", 0, fluid)
-        p_0_3 = (p_0_dew_3 + p_0_bubble_3) / 2
-        T_0_dew_3 = cp.PropsSI("T", "P", p_0_3, "Q", 1, fluid)
-        T_0_bubble_3 = cp.PropsSI("T", "P", p_0_3, "Q", 0, fluid)
-        h_0_dew_3 = cp.PropsSI("H", "P", p_0_3, "Q", 1, fluid)
-        h_0_bubble_3 = cp.PropsSI("H", "P", p_0_3, "Q", 0, fluid)
-        T_4_3 = (h_4 - h_0_bubble_3) / (h_0_dew_3 - h_0_bubble_3) * (T_0_dew_3 - T_0_bubble_3) + T_0_bubble_3
-        T_0_m_3 = (T_4_3 + T_0_dew_3) / 2
-        dt_0_m_3 = T_0_m_3 - T_0
-        T_0_4 = T_0 - dt_0_m_3
-
-        T_4 = T_4_3
-        T_0_dew = T_0_dew_3
-        T_0_bubble = T_0_bubble_3
-        p_0 = p_0_3
+        T_4 = T_4_2
+        T_0_dew = T_0_dew_2
+        T_0_bubble = T_0_bubble_2
+        p_0 = p_0_2
+        h_0_dew = h_0_dew_2
+        h_0_bubble = h_0_bubble_2
     else:
         p_0 = cp.PropsSI("P", "T", T_0, "Q", 1, fluid)
         T_4 = T_0
         T_0_dew = T_0
         T_0_bubble = T_0
+        h_0_dew = cp.PropsSI("H", "P", p_0, "Q", 1, fluid)
+        h_0_bubble = cp.PropsSI("H", "P", p_0, "Q", 0, fluid)
 
-    x_4 = cp.PropsSI("Q", "P", p_0, "T", T_4, fluid)
+    x_4 = (h_4 - h_0_bubble) / (h_0_dew - h_0_bubble)
     T_0h = T_0_dew + dt_0h
     T_sh = T_0_dew + dt_0h + dt_sh
 
@@ -436,7 +433,7 @@ def run_calculation(inputs):
             round(cp.PropsSI("S", "P", p_0, "Q", 1, fluid) / 1e3, 2),
             round(cp.PropsSI("S", "P", p_0, "Q", 0, fluid) / 1e3, 2),
         ],
-        "Dampfqualität [%]": ["", "", "", 50, "", 100, 0, 100, 0],
+        "Dampfqualität [%]": ["", "", "", round(x_4*100,1), "", 100, 0, 100, 0],
     })
 
     df_results = pd.DataFrame({
@@ -628,6 +625,8 @@ with st.expander("Anleitung"):
         - **c'**: Flüssigkeit bei Verflüssigungsdruck
         - **0''**: Gesättigtes Gas bei Verdampfungsdruck
         - **0'**: Flüssigkeit bei Verdampfungsdruck
+
+        Die Kreislaufpunkte c'' und 0'' sind nach DIN EN 378 zur Auslegung der Wärmeübertrager zu verwenden. In dieser Berechnungssfotware wird die ausgewählte Verflüssigungs- und Verdampfungstemperatur als die jeweils mittlere Temperatur berechnet. Damit liegt die mittlere Verflüssigungstemperatur genau zwischen c'' und c', die mittlere Verdampfungstemperatur zwischen 4 und 0''.
 
         Repository: https://github.com/div-ne/Einfache-Kreislaufberechnung
         """
