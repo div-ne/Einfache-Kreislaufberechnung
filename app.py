@@ -8,7 +8,7 @@ from scipy.optimize import brentq
 st.set_page_config(page_title="Einfache Kreislaufberechnung", layout="wide", page_icon="logo.png")
 
 APP_TITLE = "Einfache Kreislaufberechnung"
-APP_VERSION = "0.15.8V"
+APP_VERSION = "1.0.0V"
 
 FLUIDS = {
     "R11": "R11",
@@ -626,7 +626,7 @@ with st.expander("Anleitung"):
         - **0''**: Gesättigtes Gas bei Verdampfungsdruck
         - **0'**: Flüssigkeit bei Verdampfungsdruck
 
-        Die Kreislaufpunkte c'' und 0'' sind nach DIN EN 378 zur Auslegung der Wärmeübertrager zu verwenden. In dieser Berechnungssfotware wird die ausgewählte Verflüssigungs- und Verdampfungstemperatur als die jeweils mittlere Temperatur berechnet. Damit liegt die mittlere Verflüssigungstemperatur genau zwischen c'' und c', die mittlere Verdampfungstemperatur zwischen 4 und 0''.
+        Die Kreislaufpunkte c'' und 0'' sind nach DIN EN 378 zur Auslegung der Wärmeübertrager zu verwenden. In dieser Berechnungssfotware wird bei Auswahl eines Kältemittels mit Temperaturgleit die ausgewählte Verflüssigungs- und Verdampfungstemperatur als die jeweils mittlere Temperatur berechnet. Damit liegt die mittlere Verflüssigungstemperatur genau zwischen den Kreislaufpunkten c'' und c', die mittlere Verdampfungstemperatur zwischen 4 und 0''.
 
         Repository: https://github.com/div-ne/Einfache-Kreislaufberechnung
         """
