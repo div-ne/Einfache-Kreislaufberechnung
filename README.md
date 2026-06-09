@@ -12,7 +12,7 @@
 
 ## Eingabeparameter
 
-Die Berechnung wird mit folgenden Eingaben durchgeführt
+Die Berechnung wird mit folgenden Eingaben durchgeführt:
 
 - Projektname
 - Kältemittel
@@ -50,7 +50,7 @@ Für jede Leitung werden zwei Varianten bestimmt:
 
 ## CSV-Export
 
-Über den Button **„CSV-Datei erstellen“** können die Daten exportiert werden
+Über den Button **„CSV-Datei erstellen“** können die Daten exportiert werden.
 
 ## Technische Basis
 
