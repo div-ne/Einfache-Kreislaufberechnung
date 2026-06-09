@@ -1,6 +1,6 @@
+streamlit
 numpy
 pandas
-streamlit
 CoolProp
 io
 scipy
