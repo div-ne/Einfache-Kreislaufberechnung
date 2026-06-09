@@ -4,9 +4,9 @@
 
 ## Funktionen
 
-- Berechnung der Rohrreibungszahl λ
-- Vergleich der Rohrreibungszahlen nach Hagen-Poiseuille, Blasius, Prandtl, Colebrook-White und Nikuradse
-- Export der Ergebnisse als CSV-Datei
+- Berechnung der Rohrreibungszahl λ.
+- Vergleich der Rohrreibungszahlen nach Hagen-Poiseuille, Blasius, Prandtl, Colebrook-White und Nikuradse.
+- Export der Ergebnisse als CSV-Datei.
 
 ## Eingabeparameter
 
