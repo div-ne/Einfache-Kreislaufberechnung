@@ -8,7 +8,7 @@ from scipy.optimize import brentq
 st.set_page_config(page_title="Einfache Kreislaufberechnung", layout="wide", page_icon="logo.png")
 
 APP_TITLE = "Einfache Kreislaufberechnung"
-APP_VERSION = "1.0.0V"
+APP_VERSION = "v1.0.0"
 
 FLUIDS = {
     "R11": "R11",
